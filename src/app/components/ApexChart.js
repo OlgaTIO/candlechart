@@ -1,4 +1,3 @@
-import ApexCharts from "apexcharts";
 import ReactApexChart from "react-apexcharts";
 
 const ApexChart = ({ data }) => {
@@ -15,6 +14,9 @@ const ApexChart = ({ data }) => {
         })),
       },
     ],
+    xaxis: {
+      type: "datetime",
+    },
   };
   return (
     <div id="chart">
@@ -22,7 +24,8 @@ const ApexChart = ({ data }) => {
         options={options}
         series={options.series}
         type="candlestick"
-        height={350}
+        height={600}
+        width={1400}
       />
     </div>
   );
