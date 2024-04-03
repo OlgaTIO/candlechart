@@ -4,7 +4,6 @@ const ApexChart = ({ data }) => {
   const options = {
     chart: {
       type: "candlestick",
-      height: 350,
     },
     series: [
       {
