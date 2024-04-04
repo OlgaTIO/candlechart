@@ -216,6 +216,20 @@
   border: 1px solid gray;
   border-radius: 5px;
 }
+.loading {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(var(--background-end-rgb)) 40%
+  );
+  font-size: 40px;
+  position: relative;
+}
 
 /* Tablet and Smaller Desktop */
 @media (min-width: 701px) and (max-width: 1120px) {

@@ -1,24 +1,28 @@
 "use client";
 
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
-import { getForexBar } from "../app/data/getForexBar";
+import { useState } from "react";
 import ApexChart from "../app/components/ApexChart";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+import { getForexBar } from "./data/getForexBar";
 
-export default function Home() {
+function Home() {
   const [selectedRange, setSelectedRange] = useState(2);
   const { data, status } = useQuery({
-    queryKey: ["forexData"],
-    queryFn: () => getForexBar(selectedRange),
+    queryKey: ["forexData", selectedRange],
+    queryFn: async () => getForexBar(selectedRange),
   });
-  console.log(data);
+
   const handleRangeChange = (event) => {
-    setSelectedRange(parseInt(event.target.value));
+    setSelectedRange(event.target.value);
   };
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
+  if (status === "pending") {
+    return <div className={styles.loading}>Loading...</div>;
   }
 
   if (status === "error" || !data) {
@@ -42,5 +46,14 @@ export default function Home() {
         </select>
       </div>
     </main>
+  );
+}
+
+const queryClient = new QueryClient();
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Home />
+    </QueryClientProvider>
   );
 }
