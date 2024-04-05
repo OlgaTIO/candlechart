@@ -9,9 +9,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { getForexBar } from "./data/getForexBar";
+import CandlestickChart from "./components/CandlestickChart";
 
 function Home() {
-  const [selectedRange, setSelectedRange] = useState(2);
+  const [selectedRange, setSelectedRange] = useState(1);
   const { data, status } = useQuery({
     queryKey: ["forexData", selectedRange],
     queryFn: async () => getForexBar(selectedRange),
@@ -34,11 +35,13 @@ function Home() {
       <h1>Forex</h1>
       <div className={styles.center}>
         <h2>CandleStick Chart</h2>
-        <ApexChart data={data} />
+        {/* <ApexChart data={data} /> */}
+        <CandlestickChart data={data} />
       </div>
       <div className={styles.controls}>
         <label htmlFor="range">Select Range:</label>
         <select id="range" value={selectedRange} onChange={handleRangeChange}>
+          <option value="1">1 Minutes</option>
           <option value="2">2 Minutes</option>
           <option value="3">3 Minutes</option>
           <option value="4">4 Minutes</option>
