@@ -4,6 +4,7 @@ const CandlestickChart = ({ data }) => {
   const canvasRef = useRef(null);
   const [canvasWidth, setCanvasWidth] = useState(1000);
   const [canvasHeight, setCanvasHeight] = useState(600);
+  const [hoveredCandle, setHoveredCandle] = useState(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,12 +28,12 @@ const CandlestickChart = ({ data }) => {
     ctx.strokeStyle = "gray";
     ctx.stroke();
 
-    const priceInterval = priceRange / 5;
-    for (let i = 0; i <= 5; i++) {
+    const priceInterval = priceRange / 7;
+    for (let i = 0; i <= 7; i++) {
       const price = minPrice + i * priceInterval;
       const y =
         canvasHeight - ((price - minPrice) / priceRange) * (canvasHeight - 20);
-      ctx.fillText(price.toFixed(2), 5, y);
+      ctx.fillText(price.toFixed(4), 7, y);
     }
 
     // Draw y-axis title
@@ -52,18 +53,21 @@ const CandlestickChart = ({ data }) => {
     ctx.stroke();
 
     // Draw x-axis labels
-    const dateLabels = data.map((entry) => new Date(entry.t));
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.color = "white";
-    for (let i = 0; i < dateLabels.length; i++) {
-      const x = (i + 0.5) * candleWidth + yAxisPadding;
-      ctx.fillText(dateLabels[i], x, canvasHeight - 10);
-    }
+    const dateLabels = data.map((entry) => new Date(entry.t).getTime());
+    const minTime = dateLabels[0];
+    const maxTime = dateLabels[dateLabels.length - 1];
 
-    // Draw x-axis title
-    ctx.textAlign = "center";
-    ctx.fillText("Date", canvasWidth / 2, canvasHeight - 5);
+    const timeRange = maxTime - minTime;
+    const timeInterval = timeRange / 10;
+    for (let i = 0; i <= 10; i++) {
+      const time = minTime + i * timeInterval;
+      const date = new Date(time);
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      const label = `${hours}:${minutes}`;
+      const x = ((i + 0.2) * (canvasWidth - yAxisPadding)) / 10 + yAxisPadding;
+      ctx.fillText(label, x, canvasHeight - 10);
+    }
 
     data.forEach((entry, index) => {
       const x = index * candleWidth + yAxisPadding;
@@ -86,9 +90,51 @@ const CandlestickChart = ({ data }) => {
       ctx.lineTo(x + candleWidth / 2, candleY - candleHeight);
       ctx.stroke();
     });
+
+    const handleMouseMove = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      console.log(rect);
+      console.log(event);
+      console.log(data.length);
+
+      const mouseX = event.clientX - rect.left;
+      console.log(mouseX);
+      const candleIndex = mouseX;
+      if (candleIndex >= 0 && candleIndex < data.length) {
+        setHoveredCandle(11);
+      } else {
+        setHoveredCandle(null);
+      }
+    };
+
+    canvas.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      canvas.removeEventListener("mousemove", handleMouseMove);
+    };
   }, [data, canvasWidth, canvasHeight]);
 
-  return <canvas ref={canvasRef} id="canvas"></canvas>;
+  return (
+    <div>
+      <canvas ref={canvasRef} id="canvas"></canvas>
+      {hoveredCandle && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            padding: "10px",
+            background: "white",
+          }}
+        >
+          <p>Open: {hoveredCandle.open}</p>
+          <p>High: {hoveredCandle.high}</p>
+          <p>Low: {hoveredCandle.low}</p>
+          <p>Close: {hoveredCandle.close}</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default CandlestickChart;
