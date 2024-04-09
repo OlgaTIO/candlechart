@@ -4,7 +4,7 @@ const CandlestickChart = ({ data }) => {
   const canvasRef = useRef(null);
   const [canvasWidth, setCanvasWidth] = useState(1000);
   const [canvasHeight, setCanvasHeight] = useState(600);
-  const [hoveredCandle, setHoveredCandle] = useState(null);
+  const [hoveredCandle, setHoveredCandle] = useState();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,7 +76,7 @@ const CandlestickChart = ({ data }) => {
         canvasHeight - ((entry.h - minPrice) / priceRange) * canvasHeight;
       const bodyHeight = ((entry.o - entry.c) / priceRange) * canvasHeight;
 
-      ctx.fillStyle = entry.o > entry.c ? "red" : "green";
+      ctx.fillStyle = entry.o > entry.c ? "yellow" : "blue";
       ctx.fillRect(
         x + candleWidth * 0.25,
         candleY,
@@ -84,7 +84,7 @@ const CandlestickChart = ({ data }) => {
         bodyHeight
       );
 
-      ctx.strokeStyle = entry.o > entry.c ? "red" : "green";
+      ctx.strokeStyle = entry.o > entry.c ? "yellow" : "blue";
       ctx.beginPath();
       ctx.moveTo(x + candleWidth / 2, candleY);
       ctx.lineTo(x + candleWidth / 2, candleY - candleHeight);
@@ -93,44 +93,51 @@ const CandlestickChart = ({ data }) => {
 
     const handleMouseMove = (event) => {
       const rect = canvas.getBoundingClientRect();
-      console.log(rect);
-      console.log(event);
-      console.log(data.length);
-
       const mouseX = event.clientX - rect.left;
-      console.log(mouseX);
-      const candleIndex = mouseX;
+      const mouseY = event.clientY - rect.top;
+      const candleIndex = Math.floor((mouseX - yAxisPadding) / candleWidth);
       if (candleIndex >= 0 && candleIndex < data.length) {
-        setHoveredCandle(11);
+        setHoveredCandle({
+          ...data[candleIndex],
+          x: mouseX,
+          y: mouseY,
+        });
       } else {
         setHoveredCandle(null);
       }
     };
 
+    const handleMouseLeave = () => {
+      setHoveredCandle(null);
+    };
     canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [data, canvasWidth, canvasHeight]);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <canvas ref={canvasRef} id="canvas"></canvas>
+
       {hoveredCandle && (
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: 0,
+            left: "40px",
             padding: "10px",
             background: "white",
+            borderRadius: "15px",
           }}
         >
-          <p>Open: {hoveredCandle.open}</p>
-          <p>High: {hoveredCandle.high}</p>
-          <p>Low: {hoveredCandle.low}</p>
-          <p>Close: {hoveredCandle.close}</p>
+          <p>Open: {hoveredCandle.o}</p>
+          <p>High: {hoveredCandle.h}</p>
+          <p>Low: {hoveredCandle.l}</p>
+          <p>Close: {hoveredCandle.c}</p>
         </div>
       )}
     </div>

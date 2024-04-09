@@ -205,14 +205,19 @@
     z-index: 1;
   }
 }
-
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .controls label {
-  margin-right: 10px;
+  margin: 0 15px;
   font-weight: 600;
 }
 
 .controls select {
   padding: 8px;
+  margin: 0 10px;
   border: 1px solid gray;
   border-radius: 5px;
 }
@@ -229,6 +234,32 @@
   );
   font-size: 40px;
   position: relative;
+}
+
+.time_container {
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+.time_container label {
+  font-weight: 700;
+  padding: 0 15px;
+}
+.time_container input {
+  border-radius: 5px;
+  padding: 5px;
+  margin: 0 15px;
+}
+.time_container button {
+  border-radius: 5px;
+  padding: 5px 15px;
+  background-color: lightgray;
+  font-weight: 600;
+  margin: 0 15px;
+  cursor: pointer;
 }
 
 /* Tablet and Smaller Desktop */
